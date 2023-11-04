@@ -1,0 +1,30 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "alias": "Alias",
+                    "optimistic": "Musclemass data is in percent",
+                    "password": "Password",
+                    "username": "Username"
+                },
+                "description": "Configure a Device for Garmin Connect.\n Please enter your Credentials.",
+                "name": "Fill data"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "alias": "Alias",
+                    "optimistic": "Musclemass data is in percent",
+                    "password": "Password",
+                    "username": "Username"
+                },
+                "description": "Fill Data",
+                "name": "title"
+            }
+        }
+    }
+}
