@@ -1,0 +1,1 @@
+# hassio_garmin_scale_sync
