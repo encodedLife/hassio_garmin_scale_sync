@@ -27,14 +27,14 @@ The Garmin Scale Sync integration allows Home Assistant to interact with your Ga
 Configuration is performed through the Home Assistant UI. Once authenticated, you can select which metrics to sync and configure the frequency of synchronization.
 
 ## Usage
-After setup, the integration will listen for changes to the specified entities representing the health metrics. When a change is detected, or at the configured interval, the integration will automatically send an update to Garmin Connect.
 
-## Code Structure
-The codebase is structured as follows:
-Entities:
-button.py
-number.py
-datetime.py
+Once configured, the Garmin Connect integration makes several entities available in Home Assistant representing various health metrics. These entities are meant to be populated with data by the user.
+
+When you're ready to send the updated information to Garmin Connect, simply press the "Send" button provided by the integration. This action triggers the integration to read the current states of the entities, compile the data, and transmit it directly to Garmin Connect.
+
+Please ensure that you've entered the latest data into the respective entities before initiating the send operation for accurate syncing with your Garmin Connect account.
+
+
 
 ## Dependencies
 - `garth`: An amazing Python library to interface with Garmin Connect API and MFA. Developed by [matin](https://github.com/matin)
