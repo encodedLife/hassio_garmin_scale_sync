@@ -15,7 +15,7 @@ Thank you for your support and stay tuned for continuous improvements.
 The Garmin Scale Sync integration allows Home Assistant to interact with your Garmin account, enabling the synchronization of various health metrics such as body weight, body fat percentage, muscle mass, and visceral fat. This integration aims to bridge your health data from your home environment into the Garmin ecosystem for a comprehensive health and activity tracking.
 
 ## Features
-- **Data Sync**: Automatically sends scale measurements from Home Assistant to Garmin Connect.
+- **Data Sync**: sends scale measurements from Home Assistant to Garmin Connect.
 - **Health Metrics**: Supports syncing multiple health metrics, including body weight, body fat percentage, muscle mass, and visceral fat rating.
 - **Timestamp Synchronization**: Ensures that the time of the measurement is accurately reflected in the Garmin Connect data.
 
