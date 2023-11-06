@@ -5,8 +5,8 @@
   "config_flow": true,
   "dependencies": ["datetime"],
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/encodedLife/hassio_garmin_scale_sync/issues"
-  "documentation": "https://github.com/encodedLife/hassio_garmin_scale_sync#readme"
+  "issue_tracker": "https://github.com/encodedLife/hassio_garmin_scale_sync/issues",
+  "documentation": "https://github.com/encodedLife/hassio_garmin_scale_sync#readme",
   "requirements": ["garth==0.4.40","fit-tool"],
   "ssdp": [],
   "zeroconf": [],
