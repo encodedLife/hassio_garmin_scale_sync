@@ -4,11 +4,11 @@
   "codeowners": ["@encodedLife"],
   "config_flow": true,
   "dependencies": ["datetime"],
+  "documentation": "https://github.com/encodedLife/hassio_garmin_scale_sync#readme",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/encodedLife/hassio_garmin_scale_sync/issues",
-  "documentation": "https://github.com/encodedLife/hassio_garmin_scale_sync#readme",
   "requirements": ["garth==0.4.40","fit-tool"],
   "ssdp": [],
-  "zeroconf": [],
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "zeroconf": []
 }
