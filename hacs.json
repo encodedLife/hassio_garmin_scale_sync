@@ -1,5 +1,5 @@
 {
   "name": "Garmin Scale Sync",
-  "content_in_root": true,
+  "content_in_root": false,
   "domains": ["number","button","datetime"]
 }
