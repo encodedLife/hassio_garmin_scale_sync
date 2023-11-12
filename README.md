@@ -1,3 +1,6 @@
+[![Validate with hassfest](https://github.com/encodedLife/hassio_garmin_scale_sync/actions/workflows/hassfest.yaml/badge.svg?branch=main)](https://github.com/encodedLife/hassio_garmin_scale_sync/actions/workflows/hassfest.yaml)
+[![Validate with Hacs](https://github.com/encodedLife/hassio_garmin_scale_sync/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/encodedLife/hassio_garmin_scale_sync/actions/workflows/validate.yml)
+
 # Garmin Scale Sync Integration for Home Assistant
 
 ## Known Issues
