@@ -1,4 +1,5 @@
 {
   "name": "Garmin Scale Sync",
+  "render_readme": true,
   "content_in_root": false
 }
