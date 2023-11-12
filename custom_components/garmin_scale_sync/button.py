@@ -38,7 +38,7 @@ class SendValuesButton(ButtonEntity):
     ) -> None:
         """Initialize the button."""
         self._attr_unique_id = f"{base_unique_id}_{entity_suffix}"
-        self._attr_name = "Send Values"
+        self._attr_name = entity_suffix
         self._attr_icon = "mdi:send"
         self.hass = hassHandler
         self.entryID = base_unique_id

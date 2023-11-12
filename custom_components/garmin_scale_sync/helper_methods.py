@@ -17,6 +17,9 @@ from .const import (
     SUFFIX_MUSCLEWEIGHT,
     SUFFIX_VICERALFAT,
     SUFFIX_MEASUREMENT_DATETIME,
+    GSC_OAUTH_TOKEN,
+    GSC_BODY_HEIGHT,
+    GSC_MUSCLEDATA_UNITS,
 )
 
 # Imports for constructing and manipulating FIT files.
@@ -59,14 +62,21 @@ async def async_send_values_to_garmin(
     Returns:
         bool: True if the data was successfully sent, False otherwise.
     """
-
     # getting the oauth token from the config entry
     token_garth = hassHandler.config_entries.async_get_entry(unique_id).data[
-        "oauthToken"
+        GSC_OAUTH_TOKEN
+    ]
+
+    bodyheight = hassHandler.config_entries.async_get_entry(unique_id).data[
+        GSC_BODY_HEIGHT
+    ]
+
+    muscleWeightUnit = hassHandler.config_entries.async_get_entry(unique_id).data[
+        GSC_MUSCLEDATA_UNITS
     ]
 
     # getting the data from the number entities
-    weight = await get_state_by_unique_id(
+    bodyweight = await get_state_by_unique_id(
         hassHandler, f"{unique_id}_{SUFFIX_WEIGHT}", Platform.NUMBER
     )
     bodyfat = await get_state_by_unique_id(
@@ -86,19 +96,28 @@ async def async_send_values_to_garmin(
     measuTS = datetime_to_timestamp(measurement_date)
 
     # converting the values to the correct type
-    weight = float(weight)
+    bodyweight = float(bodyweight)
     bodyfat = float(bodyfat)
     musclew = float(musclew)
+
+    # converting the muscleweight to kg
+    # if it is in percent
+    if muscleWeightUnit == "%":
+        # muscleToExport= (musclem[percent]* bodyweight[kg])/100
+        musclew = (musclew * bodyweight) / 100
+
+    # calculating bmi
+    bmi = bodyweight / ((bodyheight / 100) ** 2)
 
     # converting the viceral fat to an int
     viceral = int(float(viceral))
 
     fit_Data = create_FIT_FileStructure(
-        body_weight=weight,
+        body_weight=bodyweight,
         body_fat_percent=bodyfat,
         muscle_mass=musclew,
-        muscle_mass_is_percent=True,
         visceral_fat_rating=viceral,
+        bmi_val=bmi,
         timestamp_measurement=measuTS,
     )
 
@@ -171,8 +190,8 @@ def create_FIT_FileStructure(
     body_weight: float,
     body_fat_percent: float,
     muscle_mass: float,
-    muscle_mass_is_percent: bool,
     visceral_fat_rating: int,
+    bmi_val: float,
     timestamp_measurement: int,
 ):
     """
@@ -182,17 +201,13 @@ def create_FIT_FileStructure(
         Type=FileType.WEIGHT, manufacturer=Manufacturer.DEVELOPMENT
     )
 
-    muscleMassToExport = 0.0
-    if muscle_mass_is_percent:
-        # muscleToExport= (musclem[percent]* bodyweight[kg])/100
-        muscleMassToExport = (muscle_mass * body_weight) / 100
-
     weightToExport = WeightScaleMessage()
     weightToExport.timestamp = timestamp_measurement
     weightToExport.visceral_fat_rating = visceral_fat_rating
     weightToExport.weight = body_weight
     weightToExport.percent_fat = body_fat_percent
-    weightToExport.muscle_mass = muscleMassToExport
+    weightToExport.muscle_mass = muscle_mass
+    weightToExport.bmi = bmi_val
 
     builder = FitFileBuilder(auto_define=True, min_string_size=50)
     builder.add(fit_header)

@@ -28,7 +28,15 @@ from homeassistant.helpers.schema_config_entry_flow import (
 )
 
 
-from .const import DOMAIN, GSC_MUSCLEDATA_IN_PERCENT, GSC_OAUTH_TOKEN
+from .const import (
+    DOMAIN,
+    GSC_MUSCLEDATA_UNITS,
+    GSC_OAUTH_TOKEN,
+    MUSCLEMASS_INPUT_UNIT,
+    GSC_BODY_HEIGHT,
+    GARTH_LOGIN_SUCCESS,
+    GARTH_LOGIN_FAILED,
+)
 import garth
 from garth.exc import GarthException
 import os
@@ -39,7 +47,8 @@ CONFIG_SCHEMA = vol.Schema(
         vol.Required(CONF_ALIAS): cv.string,  # used for the title of the entry
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Required(GSC_MUSCLEDATA_IN_PERCENT): cv.boolean,
+        vol.Required(GSC_BODY_HEIGHT): cv.positive_int,
+        vol.Required(GSC_MUSCLEDATA_UNITS): vol.In(MUSCLEMASS_INPUT_UNIT),
     }
 )
 
@@ -52,14 +61,17 @@ CONFIG_FLOW: dict[str, SchemaFlowFormStep | SchemaFlowMenuStep] = {
 
 # getting the oauth token from garth
 # this is done in a separate thread to not block the main thread
+# returns the oauth token and a status code
+# on sucess the status code is 1
+# on failure the status code is 0
 def get_oauth_token(username, password):
     try:
         garth.login(username, password)
-        return garth.client.dumps()
+        return garth.client.dumps(), GARTH_LOGIN_SUCCESS
 
     except GarthException as e:
         print(e.msg)
-        return "Error"
+        return None, GARTH_LOGIN_FAILED
 
     # garth.login(username, password)
     # return garth.client.dumps()
@@ -89,14 +101,16 @@ class ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             entryTitle = user_input[CONF_ALIAS]
             username = user_input[CONF_USERNAME]
             password = user_input[CONF_PASSWORD]
-            muscleDataIsPercent = user_input[GSC_MUSCLEDATA_IN_PERCENT]
+            muscleDataIsPercent = user_input[GSC_MUSCLEDATA_UNITS]
+            bodyheigh = user_input[GSC_BODY_HEIGHT]
 
             # get the oauth token from garth
-            authToken = await self.hass.async_add_executor_job(
+            authToken, statuscode = await self.hass.async_add_executor_job(
                 get_oauth_token, username, password
             )
 
-            if authToken == "Error":
+            # check if the statuscode is failed
+            if statuscode == GARTH_LOGIN_FAILED:
                 return await self._show_setup_form({"base": "invalid_auth"})
 
             return self.async_create_entry(
@@ -104,8 +118,9 @@ class ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 data={
                     CONF_USERNAME: username,
                     CONF_PASSWORD: password,
-                    GSC_MUSCLEDATA_IN_PERCENT: muscleDataIsPercent,
+                    GSC_MUSCLEDATA_UNITS: muscleDataIsPercent,
                     GSC_OAUTH_TOKEN: authToken,
+                    GSC_BODY_HEIGHT: bodyheigh,
                 },
             )
 
@@ -164,8 +179,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     CONF_PASSWORD, default=mydict.get(CONF_PASSWORD)
                 ): cv.string,
                 vol.Optional(
-                    GSC_MUSCLEDATA_IN_PERCENT,
-                    default=mydict.get(GSC_MUSCLEDATA_IN_PERCENT),
+                    GSC_BODY_HEIGHT, default=mydict.get(GSC_BODY_HEIGHT)
+                ): cv.positive_int,
+                vol.Optional(
+                    GSC_MUSCLEDATA_UNITS,
+                    default=mydict.get(GSC_MUSCLEDATA_UNITS),
                 ): cv.boolean,
             }
         )
