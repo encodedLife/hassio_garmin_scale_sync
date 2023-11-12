@@ -2,12 +2,12 @@
   "config": {
     "step": {
       "user": {
-        "name":"Fill data",
         "data": {
           "alias": "Alias",
           "username": "Username",
           "password": "Password",
-          "optimistic": "Musclemass data is in percent"
+          "bodyheight": "Bodyheight in centimeters, used for calculation of the BMI",
+          "muscleDataDefinedUnit": "In which unit will you enter your muscle weight?"
         },
         "description": "Configure a Device for Garmin Connect.\n Please enter your Credentials."
       }
@@ -20,10 +20,10 @@
           "alias": "Alias",
           "username": "Username",
           "password": "Password",
-          "optimistic": "Musclemass data is in percent"
+          "bodyheight": "Bodyheight in centimeters, used for calculation of the BMI",
+          "muscleDataDefinedUnit": "In which unit will you enter your muscle weight?"
         },
-        "description": "Fill Data",
-        "name": "title"
+        "description": "Configure a Device for Garmin Connect.\n Please enter your Credentials."
       }
     }
   }

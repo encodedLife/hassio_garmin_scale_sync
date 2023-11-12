@@ -31,7 +31,7 @@ class GarminDateTimeInput(DateTimeEntity):
     """Entity for date input."""
 
     def __init__(self, base_unique_id: str, entity_suffix: str) -> None:
-        self._attr_name = "Garmin Date Input"
+        self._attr_name = entity_suffix
         self._attr_icon = "mdi:calendar"
         self._attr_unique_id = f"{base_unique_id}_{entity_suffix}"
         self._attr_has_date = True

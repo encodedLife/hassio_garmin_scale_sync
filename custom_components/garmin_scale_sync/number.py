@@ -51,7 +51,7 @@ class GarminScaleBaseEntity(NumberEntity):
         unit_of_measurement: str,
     ) -> None:
         super().__init__()
-        self._attr_name = name
+        self._attr_name = entity_suffix
         self._attr_unique_id = f"{base_unique_id}_{entity_suffix}"
         self._attr_mode = NumberMode.BOX
         self._attr_native_max_value = max_value
