@@ -4,9 +4,26 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN
+from .const import DOMAIN,SERVICE_NAME,DEFAULT_NAME
+from .helper_methods import async_send_values_to_garmin_from_service
 
+import voluptuous as vol
+import logging
+
+SERVICE_SCHEMA = vol.Schema(
+    {
+        vol.Required("target"): cv.string,
+        vol.Required("weight"): cv.string,
+        vol.Optional("muscle_mass"): cv.string,
+        vol.Optional("viceral_fat"): cv.string,
+        vol.Optional("body_fat"): cv.string,
+        vol.Optional("measurement_time"): cv.string,
+    }
+)
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """
@@ -31,6 +48,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(
         entry, (Platform.NUMBER, Platform.BUTTON, Platform.DATETIME)
     )
+
+    async def async_Sync_weight(service):
+        """Service to sync weight to Garmin Connect"""
+        _LOGGER.info("%s service called", service.service)
+        params = {
+             key: value for key, value in service.data.items() 
+        }
+        _LOGGER.info("Params %s",params)
+        _LOGGER.info("Service Data %s",service.data)
+
+        success = await async_send_values_to_garmin_from_service(service.data, hass)
+        _LOGGER.info("Result %s",success)
+    
+
+    hass.services.async_register(
+            DOMAIN, "sync_weight", async_Sync_weight, schema=SERVICE_SCHEMA
+        )
 
     # Register a listener to handle options updates if the integration has an options flow.
     entry.async_on_unload(entry.add_update_listener(config_entry_update_listener))

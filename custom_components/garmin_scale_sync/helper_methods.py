@@ -42,6 +42,8 @@ from homeassistant.helpers import entity_registry as er
 from io import BytesIO
 
 import garth
+import logging
+_LOGGER = logging.getLogger(__name__)
 
 ####################################################################################################
 ## Functions for the button
@@ -62,6 +64,8 @@ async def async_send_values_to_garmin(
     Returns:
         bool: True if the data was successfully sent, False otherwise.
     """
+
+    _LOGGER.info("unique_id: %s",unique_id)
     # getting the oauth token from the config entry
     token_garth = hassHandler.config_entries.async_get_entry(unique_id).data[
         GSC_OAUTH_TOKEN
@@ -132,6 +136,85 @@ async def async_send_values_to_garmin(
     uploaded = await hassHandler.async_add_executor_job(garth.client.upload, binaryData)
 
     return True
+
+async def async_send_values_to_garmin_from_service(
+    data, hassHandler: HomeAssistant
+) -> bool:
+    """
+    Sends weight, body fat, muscle weight, visceral fat, and measurement date to Garmin Connect
+    using the provided unique_id and HomeAssistant instance.
+
+    Args:
+        unique_id (str): The unique ID of the Garmin Connect account to send the data to.
+        hassHandler (HomeAssistant): The HomeAssistant instance to use for retrieving the data.
+
+    Returns:
+        bool: True if the data was successfully sent, False otherwise.
+    """
+    unique_id = data.get("target")
+    weight = data.get("weight")
+    muscle_mass = data.get("muscle_mass")
+    body_fat = data.get("body_fat")
+    viceral_fat = data.get("viceral_fat")
+    measurement_time = data.get("measurement_time")
+    _LOGGER.info("unique_id: %s",unique_id)
+
+    # getting the oauth token from the config entry
+    token_garth = hassHandler.config_entries.async_get_entry(unique_id).data[
+        GSC_OAUTH_TOKEN
+    ]
+
+    bodyheight = hassHandler.config_entries.async_get_entry(unique_id).data[
+        GSC_BODY_HEIGHT
+    ]
+
+    muscleWeightUnit = hassHandler.config_entries.async_get_entry(unique_id).data[
+        GSC_MUSCLEDATA_UNITS
+    ]
+
+    # converting the datetime to a timestamp nanoseconds
+    if measurement_time:
+        measuTS = datetime_to_timestamp(measurement_time)
+    else:
+        measuTS = datetime_to_timestamp(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    # converting the values to the correct type
+    bodyweight = float(weight)
+    bodyfat = float(body_fat)
+    musclew = float(muscle_mass)
+
+    # converting the muscleweight to kg
+    # if it is in percent
+    if muscleWeightUnit == "%":
+        # muscleToExport= (musclem[percent]* bodyweight[kg])/100
+        musclew = (musclew * bodyweight) / 100
+
+    # calculating bmi
+    bmi = bodyweight / ((bodyheight / 100) ** 2)
+
+    # converting the viceral fat to an int
+    viceral = int(float(viceral_fat))
+
+    fit_Data = create_FIT_FileStructure(
+        body_weight=bodyweight,
+        body_fat_percent=bodyfat,
+        muscle_mass=musclew,
+        visceral_fat_rating=viceral,
+        bmi_val=bmi,
+        timestamp_measurement=measuTS,
+    )
+
+    # Create a file-like object from the FIT file data
+    binaryData = BytesIO(fit_Data.to_bytes())
+    # Set the name of the file-like object
+    binaryData.name = "weight.fit"
+
+    # Upload the file-like object using garth.client.upload() method
+    # garth.client.loads() method is used to load the oauth token
+    garth.client.loads(token_garth)
+    uploaded = await hassHandler.async_add_executor_job(garth.client.upload, binaryData)
+    _LOGGER.info("Garmin Sync uploaded: %s",uploaded)
+    return uploaded
 
 
 async def get_state_by_unique_id(

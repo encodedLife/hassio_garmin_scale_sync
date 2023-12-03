@@ -1,10 +1,14 @@
 """Sensor platform for Garmin Scale Sync integration."""
 from __future__ import annotations
 
+import voluptuous as vol
+
 from homeassistant.components.button import ButtonDeviceClass, ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers import config_validation as cv, entity_platform
+
 
 from .helper_methods import async_send_values_to_garmin
 from .const import (
@@ -29,6 +33,13 @@ async def async_setup_entry(
         [SendValuesButton(base_unique_id, SUFFIX_BTN_SEND_DATA, hassHandler=hass)], True
     )
 
+    platform = entity_platform.current_platform.get()
+    # Services
+    # platform.async_register_entity_service(
+    #     "sync_weight",
+    #     {vol.Required("weight"): cv.string},
+    #     "async_press",
+    # )
 
 class SendValuesButton(ButtonEntity):
     """Entity to input body fat in percentage."""

@@ -24,3 +24,7 @@ GARTH_LOGIN_FAILED = 0
 # defining keys for the user in which unit they wil type in the
 # musclemass
 MUSCLEMASS_INPUT_UNIT = ["kg", "%"]
+
+# defining service parameters
+SERVICE_NAME = "weight"
+DEFAULT_NAME = "foo"
