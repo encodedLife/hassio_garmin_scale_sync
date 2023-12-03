@@ -1,0 +1,48 @@
+sync_weight:
+  name: sync_weight
+  description: Syncs weight to Garmin Connect
+  fields:
+    target:
+      required: true
+      description: "Which Garmin account to use"
+      name: Target
+      selector:
+        config_entry:
+          integration: garmin_scale_sync
+    weight:
+      required: true
+      description: "Weight in kg"
+      example: 70
+      name: weight
+      selector:
+        text:
+    muscle_mass:
+      required: false
+      description: "Muscle mass in kg"
+      example: 54
+      name: Muscle Mass
+      selector:
+        text:  
+    body_fat:
+      required: false
+      description: "Body fat percentage"
+      example: 18
+      name: Body Fat
+      selector:
+        text:  
+    viceral_fat:
+      required: false
+      description: "Viceral fat"
+      example: 9
+      name: Viceral fat
+      selector:
+        text:    
+    measurement_time:
+      required: false
+      description: "Specific Measurement Time"
+      example: 2023-11-12
+      name: Measurement Time
+      selector:
+        datetime:  
+ 
+ 
